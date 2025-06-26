@@ -66,7 +66,7 @@ Paths may need to be updated depending on the runtime environment (e.g., local, 
 
 If referencing this work or its analytical framework, please cite:
 
-> Manuel, M. (2025). *Linguistic evolution in scientific abstracts across environmental sciences (1950–2024)* [Master’s thesis, Auckland University of Technology]. GitHub. https://github.com/YOURUSERNAME/linguistic-evolution-abstracts
+> Manuel, M. (2025). *Linguistic evolution in scientific abstracts across environmental sciences (1950–2024)* [Master’s thesis, Auckland University of Technology]. GitHub. https://github.com/thg2177/linguistic-evolution-abstracts
 
 ## License
 
