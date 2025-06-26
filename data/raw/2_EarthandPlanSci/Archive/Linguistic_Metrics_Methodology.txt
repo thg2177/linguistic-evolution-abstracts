@@ -1,0 +1,59 @@
+
+# Linguistic Metrics Calculation Methodology
+
+## Overview
+This document details the methodology used to calculate linguistic metrics for academic abstracts in the OA_EPS_6392.csv file, following the structure defined in C_EPS_10298.csv and Spreadsheet_Guide.csv.
+
+## Metrics Calculated (Columns R-AC)
+
+### 1. Flesch Reading Ease (Column R)
+- Formula: 206.835 - 1.015 * (words/sentences) - 84.6 * (syllables/words)
+- Higher scores indicate easier readability (0-100 scale)
+
+### 2. Flesch-Kincaid Grade Level (Column S)
+- Formula: 0.39 * (words/sentences) + 11.8 * (syllables/words) - 15.59
+- Indicates U.S. school grade level needed to understand the text
+
+### 3. Syllable Count (Column T)
+- Total syllables in the abstract
+- Uses CMU Pronouncing Dictionary with fallback estimation
+
+### 4. Gunning Fog Index (Column U)
+- Formula: 0.4 * ((words/sentences) + 100 * (complex_words/words))
+- Complex words = words with 3+ syllables
+
+### 5. Complex Word Count (Column V)
+- Count of words with 3 or more syllables
+
+### 6. SMOG Index (Column W)
+- Formula: 1.0430 * sqrt(complex_words * (30/sentences)) + 3.1291
+- Estimates years of education needed to understand text
+
+### 7. Hedging Frequency (Column X)
+- Count of hedging words (may, might, could, possibly, etc.)
+- Full list includes ~50 common hedging terms
+
+### 8. Hedging % (Column Y)
+- (Hedging words / Total words) * 100
+
+### 9. Passive Voice Ratio (Column Z)
+- Passive constructions / Total sentences
+- Detects patterns like "was/were + past participle"
+
+### 10. Normalisation Rate (Column AA)
+- Nominalizations / Total words
+- Counts words ending in -tion, -ment, -ness, -ity
+
+### 11. Lexical Density (Column AB)
+- Content words / Total words
+- Content words = nouns, verbs, adjectives, adverbs
+
+### 12. Citation Density (Column AC)
+- (Citations / Total words) * 100
+- Detects patterns like (Author, Year) and [1]
+
+## Implementation Details
+- Used NLTK for tokenization and POS tagging
+- CMU Pronouncing Dictionary for syllable counting
+- Regular expressions for pattern matching
+- All metrics rounded to specified decimal places per guide

@@ -1,0 +1,90 @@
+import numpy as np
+import re
+
+# Step 1: Keep only necessary columns
+keep_cols = ['Title', 'Year', 'Source title', 'Page count', 'Cited by', 'DOI',
+             'Abstract', 'Author Keywords', 'Index Keywords', 'Publisher',
+             'Document Type', 'Open Access', 'Source']
+df = df[keep_cols].copy()
+
+# Step 2: Define metric functions (without textstat for now)
+def count_words(text):
+    return len(str(text).split())
+
+def count_sentences(text):
+    return len(re.findall(r'[.!?]+', str(text)))
+
+def avg_sentence_length(words, sentences):
+    return words / sentences if sentences > 0 else 0
+
+def count_syllables(text):
+    text = str(text).lower()
+    return len(re.findall(r'[aeiouy]+', text))
+
+def count_complex_words(text):
+    words = str(text).split()
+    return sum(1 for w in words if len(re.findall(r'[aeiouy]+', w.lower())) >= 3)
+
+def flesch_reading_ease(words, sentences, syllables):
+    if sentences == 0 or words == 0:
+        return 0
+    return round(206.835 - (1.015 * (words / sentences)) - (84.6 * (syllables / words)), 2)
+
+def flesch_kincaid_grade(words, sentences, syllables):
+    if sentences == 0 or words == 0:
+        return 0
+    return round(0.39 * (words / sentences) + 11.8 * (syllables / words) - 15.59, 2)
+
+def gunning_fog_index(words, sentences, complex_words):
+    if sentences == 0 or words == 0:
+        return 0
+    return round(0.4 * ((words / sentences) + (complex_words / words * 100)), 2)
+
+def smog_index(complex_words, sentences):
+    if sentences == 0:
+        return 0
+    return round(1.0430 * np.sqrt(complex_words * (30 / sentences)) + 3.1291, 2)
+
+def count_hedging(text):
+    hedgers = ['may', 'might', 'could', 'would', 'possibly', 'suggest', 'appear', 'likely', 'assume', 'indicate', 'estimate']
+    text = str(text).lower()
+    return sum(text.count(w) for w in hedgers)
+
+def nominalisation_count(text):
+    text = str(text).lower()
+    return sum(text.count(suffix) for suffix in ['tion', 'sion', 'ment', 'ance', 'ence', 'ity', 'ness'])
+
+def lexical_density(text):
+    text = str(text)
+    total_words = len(text.split())
+    function_words = ['the', 'a', 'an', 'and', 'but', 'if', 'or', 'in', 'on', 'with', 'by', 'for', 'to', 'of', 'as', 'at', 'is', 'are', 'was', 'were', 'be', 'been', 'has', 'have', 'had', 'it', 'this', 'that']
+    func_count = sum(text.lower().split().count(w) for w in function_words)
+    return round(1 - func_count / total_words, 4) if total_words > 0 else 0
+
+def passive_voice_ratio(text):
+    text = str(text).lower()
+    passive_count = text.count(" was ") + text.count(" were ") + text.count(" been ")
+    sentences = count_sentences(text)
+    return round(passive_count / sentences, 2) if sentences > 0 else 0
+
+# Step 3: Compute metrics
+df['Word Count'] = df['Abstract'].apply(count_words)
+df['Sentence Count'] = df['Abstract'].apply(count_sentences)
+df['Average Sentence Length'] = df.apply(lambda row: avg_sentence_length(row['Word Count'], row['Sentence Count']), axis=1)
+df['Syllable Count'] = df['Abstract'].apply(count_syllables)
+df['Flesch Reading Ease'] = df.apply(lambda row: flesch_reading_ease(row['Word Count'], row['Sentence Count'], row['Syllable Count']), axis=1)
+df['Flesch-Kincaid Grade Level'] = df.apply(lambda row: flesch_kincaid_grade(row['Word Count'], row['Sentence Count'], row['Syllable Count']), axis=1)
+df['Complex Word Count'] = df['Abstract'].apply(count_complex_words)
+df['Gunning Fog Index'] = df.apply(lambda row: gunning_fog_index(row['Word Count'], row['Sentence Count'], row['Complex Word Count']), axis=1)
+df['SMOG Index'] = df.apply(lambda row: smog_index(row['Complex Word Count'], row['Sentence Count']), axis=1)
+df['Hedging Frequency'] = df['Abstract'].apply(count_hedging)
+df['Hedging %'] = round(df['Hedging Frequency'] / df['Word Count'] * 100, 2)
+df['Passive Voice Ratio'] = df['Abstract'].apply(passive_voice_ratio)
+df['Nominalisation Rate'] = df['Abstract'].apply(lambda x: round(nominalisation_count(x) / len(str(x).split()), 4) if x else 0)
+df['Lexical Density'] = df['Abstract'].apply(lexical_density)
+df['Citation Density (/100 words)'] = round(df['Cited by'] / df['Word Count'] * 100, 2)
+
+# Save result
+output_path = "/mnt/data/Processed_C_EPS_10298.csv"
+df.to_csv(output_path, index=False)
+output_path
