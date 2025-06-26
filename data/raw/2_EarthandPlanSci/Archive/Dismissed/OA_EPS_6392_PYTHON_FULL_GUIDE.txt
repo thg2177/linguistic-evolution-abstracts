@@ -1,0 +1,86 @@
+
+# Python Guide for Populating All Linguistic Metrics in CSVs (Columns O to AC)
+
+import pandas as pd
+import numpy as np
+import re
+import textstat
+
+def count_words(text):
+    if pd.isnull(text):
+        return 0
+    return len(str(text).split())
+
+def count_sentences(text):
+    if pd.isnull(text):
+        return 0
+    return len(re.findall(r'[.!?]+', str(text)))
+
+def avg_sentence_length(text):
+    words = count_words(text)
+    sentences = count_sentences(text)
+    if sentences == 0:
+        return np.nan
+    return round(words / sentences, 2)
+
+def syllable_count(text):
+    if pd.isnull(text):
+        return 0
+    return textstat.syllable_count(str(text))
+
+def flesch_reading_ease(text):
+    if pd.isnull(text):
+        return np.nan
+    return round(textstat.flesch_reading_ease(str(text)), 2)
+
+def flesch_kincaid_grade(text):
+    if pd.isnull(text):
+        return np.nan
+    return round(textstat.flesch_kincaid_grade(str(text)), 2)
+
+def gunning_fog(text):
+    if pd.isnull(text):
+        return np.nan
+    return round(textstat.gunning_fog(str(text)), 2)
+
+def complex_word_count(text):
+    if pd.isnull(text):
+        return 0
+    return textstat.difficult_words(str(text))
+
+def smog_index(text):
+    if pd.isnull(text):
+        return np.nan
+    return round(textstat.smog_index(str(text)), 2)
+
+def hedging_frequency(text):
+    if pd.isnull(text):
+        return 0
+    hedges = ['may', 'might', 'could', 'perhaps', 'possibly', 'seems', 'appears', 'suggests', 'likely', 'unlikely', 'assume', 'estimate', 'approximately', 'about', 'around', 'somewhat', 'relatively', 'generally', 'often', 'sometimes', 'typically', 'usually']
+    text_lower = str(text).lower()
+    return sum(text_lower.count(h) for h in hedges)
+
+df = pd.read_csv('OA_EPS_6392.csv', encoding='UTF-8-SIG')
+df['Word Count'] = df['Abstract'].apply(count_words)
+df['Sentence Count'] = df['Abstract'].apply(count_sentences)
+df['Average Sentence Length'] = df['Abstract'].apply(avg_sentence_length)
+df['Syllable Count'] = df['Abstract'].apply(syllable_count)
+df['Flesh Reading Ease'] = df['Abstract'].apply(flesch_reading_ease)
+df['Flesch-Kincaid Grade Level'] = df['Abstract'].apply(flesch_kincaid_grade)
+df['Gunning Fog Index'] = df['Abstract'].apply(gunning_fog)
+df['Complex Word Count (>= 3 syllables)'] = df['Abstract'].apply(complex_word_count)
+df['SMOG Index'] = df['Abstract'].apply(smog_index)
+df['Hedging Frequency'] = df['Abstract'].apply(hedging_frequency)
+
+ordered_columns = [
+    'Title', 'Year', 'Source title', 'Page count', 'Cited by', 'DOI', 'Abstract', 'Author Keywords', 'Index Keywords',
+    'Publisher', 'Document Status', 'Document Type', 'Open Access', 'Source', 'Word Count', 'Sentence Count',
+    'Average Sentence Length', 'Flesh Reading Ease', 'Flesch-Kincaid Grade Level', 'Syllable Count',
+    'Gunning Fog Index', 'Complex Word Count (>= 3 syllables)', 'SMOG Index', 'Hedging Frequency'
+]
+for col in ordered_columns:
+    if col not in df.columns:
+        df[col] = np.nan
+
+df = df[ordered_columns]
+df.to_csv('OA_EPS_6392_PYTHON_FULL.csv', index=False, encoding='utf-8-sig')
