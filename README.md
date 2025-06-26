@@ -19,17 +19,29 @@ Data analysis was conducted using Python and Microsoft Excel, with visualisation
 linguistic-evolution-abstracts/
 ├── data/
 │   ├── combined_abstracts.csv              # Full dataset of processed abstracts
-│   ├── raw/                                # Raw Scopus exports (by subject area)
+│   ├── raw/
+│   │   ├── 1_EnvSci.7z
+│   │   ├── 2_EarthandPlanSci.7z
+│   │   └── 3_AgriBioSci.7z
 │   └── processed/                          # Output datasets (normalised, stratified)
 ├── scripts/
 │   └── python/                             # Analysis scripts and Colab notebooks
 ├── search_schema/
 │   └── 0_ScopusSearchSchema/              # Original query filters and parameters
 ├── thesis/                                 # Final thesis manuscript (if included)
-├── zipped_backups/                         # Optional archived versions of data folders
 ├── README.md                               # Project summary and guidance
 └── LICENSE                                 # Usage and licensing information
 ```
+
+## Archived Raw Data
+
+To reduce upload volume and improve repository performance, all subject-specific raw datasets have been archived into `.7z` files. These can be found in:
+
+- `data/raw/1_EnvSci.7z`
+- `data/raw/2_EarthandPlanSci.7z`
+- `data/raw/3_AgriBioSci.7z`
+
+Each archive contains Scopus-exported CSVs used in the study. Extract using 7-Zip or any compatible decompression tool.
 
 ## Tools and Methods
 
